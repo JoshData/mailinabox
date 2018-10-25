@@ -9,7 +9,7 @@ echo "Installing Mail-in-a-Box system management daemon..."
 # We used to install management daemon-related Python packages
 # directly to /usr/local/lib. We moved to a virtualenv because
 # these packages might conflict with apt-installed packages.
-# We may have a lingering version of acme that conflcits with
+# We may have a lingering version of acme that conflicts with
 # certbot, which we're about to install below, so remove it
 # first. Once acme is installed by an apt package, this might
 # break the package version and `apt-get install --reinstall python3-acme`
@@ -55,9 +55,9 @@ hide_output $venv/bin/pip install --upgrade \
 # CONFIGURATION
 
 # Create a backup directory and a random key for encrypting backups.
-mkdir -p $STORAGE_ROOT/backup
-if [ ! -f $STORAGE_ROOT/backup/secret_key.txt ]; then
-	$(umask 077; openssl rand -base64 2048 > $STORAGE_ROOT/backup/secret_key.txt)
+mkdir -p "$STORAGE_ROOT/backup"
+if [ ! -f "$STORAGE_ROOT/backup/secret_key.txt" ]; then
+	umask 077; openssl rand -base64 2048 > "$STORAGE_ROOT/backup/secret_key.txt"
 fi
 
 
@@ -90,7 +90,7 @@ rm -f /tmp/bootstrap.zip
 cat > $inst_dir/start <<EOF;
 #!/bin/bash
 source $venv/bin/activate
-exec python `pwd`/management/daemon.py
+exec python $(pwd)/management/daemon.py
 EOF
 chmod +x $inst_dir/start
 hide_output systemctl link -f conf/mailinabox.service
@@ -103,7 +103,7 @@ hide_output systemctl enable mailinabox.service
 cat > /etc/cron.d/mailinabox-nightly << EOF;
 # Mail-in-a-Box --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
-0 3 * * *	root	(cd `pwd` && management/daily_tasks.sh)
+0 3 * * *	root	(cd $(pwd) && management/daily_tasks.sh)
 EOF
 
 # Start the management server.

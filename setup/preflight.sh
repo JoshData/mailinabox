@@ -1,10 +1,10 @@
 # Are we running as root?
 if [[ $EUID -ne 0 ]]; then
-	echo "This script must be run as root. Please re-run like this:"
-	echo
-	echo "sudo $0"
-	echo
-	exit
+	echo "This script must be run as root. Please re-run like this:" >&2
+	echo >&2
+	echo "sudo $0" >&2
+	echo >&2
+	exit 1
 fi
 
 # Check that we are running on Ubuntu 18.04 LTS (or 18.04.xx).
@@ -43,14 +43,14 @@ fi
 # Check that tempfs is mounted with exec
 MOUNTED_TMP_AS_NO_EXEC=$(grep "/tmp.*noexec" /proc/mounts || /bin/true)
 if [ -n "$MOUNTED_TMP_AS_NO_EXEC" ]; then
-	echo "Mail-in-a-Box has to have exec rights on /tmp, please mount /tmp with exec"
-	exit
+	echo "Mail-in-a-Box has to have exec rights on /tmp, please mount /tmp with exec" >&2
+	exit 1
 fi
 
 # Check that no .wgetrc exists
 if [ -e ~/.wgetrc ]; then
-	echo "Mail-in-a-Box expects no overrides to wget defaults, ~/.wgetrc exists"
-	exit
+	echo "Mail-in-a-Box expects no overrides to wget defaults, ~/.wgetrc exists" >&2
+	exit 1
 fi
 
 # Check that we are running on x86_64 or i686 architecture, which are the only
