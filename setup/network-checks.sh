@@ -22,7 +22,7 @@ fi
 # The user might have ended up on an IP address that was previously in use
 # by a spammer, or the user may be deploying on a residential network. We
 # will not be able to reliably send mail in these cases.
-REVERSED_IPV4=$(echo "$PUBLIC_IP" | sed "s/\([0-9]*\).\([0-9]*\).\([0-9]*\).\([0-9]*\)/\4.\3.\2.\1/")
+REVERSED_IPV4=$(echo "$PUBLIC_IP" | awk -F'.' '{for(i=NF;i>0;i--) printf "%s%s",$i,(i==1?"\n":".")}')
 if host "$REVERSED_IPV4.zen.spamhaus.org" > /dev/null; then
 	echo >&2
 	echo "The IP address $PUBLIC_IP is listed in the Spamhaus Block List." >&2

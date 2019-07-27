@@ -197,7 +197,7 @@ fi
 echo
 echo "Primary Hostname: $PRIMARY_HOSTNAME"
 echo "Public IP Address: $PUBLIC_IP"
-if [ ! -z "$PUBLIC_IPV6" ]; then
+if [ -n "$PUBLIC_IPV6" ]; then
 	echo "Public IPv6 Address: $PUBLIC_IPV6"
 fi
 if [ "$PRIVATE_IP" != "$PUBLIC_IP" ]; then
@@ -207,6 +207,6 @@ if [ "$PRIVATE_IPV6" != "$PUBLIC_IPV6" ]; then
 	echo "Private IPv6 Address: $PRIVATE_IPV6"
 fi
 if [ -f /usr/bin/git ] && [ -d .git ]; then
-	echo "Mail-in-a-Box Version: " $(git describe)
+	echo "Mail-in-a-Box Version: $(git describe)"
 fi
 echo

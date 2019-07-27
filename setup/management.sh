@@ -90,7 +90,7 @@ rm -f /tmp/bootstrap.zip
 cat > $inst_dir/start <<EOF;
 #!/bin/bash
 source $venv/bin/activate
-exec python $(pwd)/management/daemon.py
+exec python "$PWD/management/daemon.py"
 EOF
 chmod +x $inst_dir/start
 hide_output systemctl link -f conf/mailinabox.service
@@ -103,7 +103,7 @@ hide_output systemctl enable mailinabox.service
 cat > /etc/cron.d/mailinabox-nightly << EOF;
 # Mail-in-a-Box --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
-0 3 * * *	root	(cd $(pwd) && management/daily_tasks.sh)
+0 3 * * *	root	(cd "$PWD" && management/daily_tasks.sh)
 EOF
 
 # Start the management server.
