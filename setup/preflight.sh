@@ -1,14 +1,14 @@
 # Are we running as root?
 if [[ $EUID -ne 0 ]]; then
-	echo "This script must be run as root. Please re-run like this:"
-	echo
-	echo "sudo $0"
-	echo
-	exit
+	echo "This script must be run as root. Please re-run like this:" >&2
+	echo >&2
+	echo "sudo $0" >&2
+	echo >&2
+	exit 1
 fi
 
 # Check that we are running on Ubuntu 18.04 LTS (or 18.04.xx).
-if [ "`lsb_release -d | sed 's/.*:\s*//' | sed 's/18\.04\.[0-9]/18.04/' `" != "Ubuntu 18.04 LTS" ]; then
+if [ "$(lsb_release -d | sed 's/.*:\s*//' | sed 's/18\.04\.[0-9]/18.04/')" != "Ubuntu 18.04 LTS" ]; then
 	echo "Mail-in-a-Box only supports being installed on Ubuntu 18.04, sorry. You are running:"
 	echo
 	lsb_release -d | sed 's/.*:\s*//'
@@ -26,16 +26,16 @@ fi
 #
 # Skip the check if we appear to be running inside of Vagrant, because that's really just for testing.
 TOTAL_PHYSICAL_MEM=$(head -n 1 /proc/meminfo | awk '{print $2}')
-if [ $TOTAL_PHYSICAL_MEM -lt 490000 ]; then
+if [ "$TOTAL_PHYSICAL_MEM" -lt 490000 ]; then
 if [ ! -d /vagrant ]; then
-	TOTAL_PHYSICAL_MEM=$(expr \( \( $TOTAL_PHYSICAL_MEM \* 1024 \) / 1000 \) / 1000)
+	TOTAL_PHYSICAL_MEM=$((((TOTAL_PHYSICAL_MEM * 1024) / 1000) / 1000))
 	echo "Your Mail-in-a-Box needs more memory (RAM) to function properly."
 	echo "Please provision a machine with at least 512 MB, 1 GB recommended."
 	echo "This machine has $TOTAL_PHYSICAL_MEM MB memory."
 	exit
 fi
 fi
-if [ $TOTAL_PHYSICAL_MEM -lt 750000 ]; then
+if [ "$TOTAL_PHYSICAL_MEM" -lt 750000 ]; then
 	echo "WARNING: Your Mail-in-a-Box has less than 768 MB of memory."
 	echo "         It might run unreliably when under heavy load."
 fi
@@ -43,14 +43,14 @@ fi
 # Check that tempfs is mounted with exec
 MOUNTED_TMP_AS_NO_EXEC=$(grep "/tmp.*noexec" /proc/mounts || /bin/true)
 if [ -n "$MOUNTED_TMP_AS_NO_EXEC" ]; then
-	echo "Mail-in-a-Box has to have exec rights on /tmp, please mount /tmp with exec"
-	exit
+	echo "Mail-in-a-Box has to have exec rights on /tmp, please mount /tmp with exec" >&2
+	exit 1
 fi
 
 # Check that no .wgetrc exists
 if [ -e ~/.wgetrc ]; then
-	echo "Mail-in-a-Box expects no overrides to wget defaults, ~/.wgetrc exists"
-	exit
+	echo "Mail-in-a-Box expects no overrides to wget defaults, ~/.wgetrc exists" >&2
+	exit 1
 fi
 
 # Check that we are running on x86_64 or i686 architecture, which are the only
