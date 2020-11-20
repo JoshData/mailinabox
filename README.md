@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mail-in-a-box/mailinabox.svg?branch=master)](https://travis-ci.org/mail-in-a-box/mailinabox)
+
 Mail-in-a-Box
 =============
 

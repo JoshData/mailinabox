@@ -1,0 +1,44 @@
+language: bash
+sudo: enabled
+
+env:
+  global:
+    - NONINTERACTIVE=1
+    - PUBLIC_IP=auto
+    - PUBLIC_IPV6=auto
+    - PRIMARY_HOSTNAME=auto
+    - SKIP_NETWORK_CHECKS=1
+matrix:
+  include:
+  - name: "Install on Ubuntu 14.04"
+    dist: trusty
+    install:
+    - git checkout -q v0.30
+    # Fixes a issue with Travis CI and SpamAssassin. See here: https://github.com/travis-ci/travis-ci/issues/8906#issuecomment-351884500
+    - sudo rm -f /opt/jdk_switcher/jdk_switcher.sh
+  - name: "Install on Ubuntu 18.04"
+    dist: bionic
+git:
+  depth: false
+
+before_script:
+    # Adds a hostname to the hosts file.
+    - sudo sed -i "s/^127.0.1.1.*/127.0.1.1\t$HOSTNAME.example.com\t$HOSTNAME/" /etc/hosts
+    # Updates the apt package database and upgrades all currently installed packages.
+    - sudo apt-get -yqq update
+    - sudo apt-get -yqq --allow-unauthenticated dist-upgrade
+
+script:
+    # Runs the script.
+    - sudo setup/start.sh
+    # Verifies all the services are running by getting the HTTP headers. 
+    - curl -IkL "https://$HOSTNAME/"
+    - curl -IkL "https://$HOSTNAME/admin"
+    - curl -IkL "https://$HOSTNAME/mail/"
+    - curl -IkL "https://$HOSTNAME/cloud/"
+    # Runs ShellCheck.
+    - bash -c 'shopt -s globstar; shellcheck -s bash **/*.sh || true'
+    # Runs the test suite.
+    # - cd test
+    # - pip install -r requirements.txt
+    # - pytest
